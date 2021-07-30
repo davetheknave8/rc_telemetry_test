@@ -6,34 +6,35 @@ require 'json'
 class FileEvent
   attr_accessor :file_uuid
 
-  def initialize(file_uuid)
-    @file_name = "#{file_uuid}-testfile.txt"
+  def initialize(file_uuid, file_path)
+    if file_path
+      @file_name = "#{file_path}/#{file_uuid}-testfile.txt"
+    else
+      @file_name = "#{file_uuid}-testfile.txt"
+    end
   end
 
   def create_file
-    pid = Process.fork do
-      File.open(@file_name, "w") { |f| f.write("testing file creation") }
-      Process.setproctitle("file_creation")
-    end
-    file_path = File.expand_path("./#{@file_name}")
+    File.open(@file_name, "w") { |f| f.write("testing file creation") }
+    Process.setproctitle("file_creation")
+    pid = Process.pid
+    file_path = File.expand_path("#{@file_name}")
     response(file_path, pid)
   end
 
   def modify_file
-    pid = Process.fork do
-      File.open(@file_name, "a") { |f| f.write("testing file modification") }
-      Process.setproctitle("file_modification")
-    end
-    file_path = File.expand_path("./#{@file_name}")
+    File.open(@file_name, "a") { |f| f.write("testing file modification") }
+    pid = Process.pid
+    Process.setproctitle("file_modification")
+    file_path = File.expand_path("#{@file_name}")
     response(file_path, pid)
   end
 
   def delete_file
-    file_path = File.expand_path("./#{@file_name}")
-    pid = Process.fork do
-      file = File.delete(@file_name)
-      Process.setproctitle("file_deletion")
-    end
+    file_path = File.expand_path("#{@file_name}")
+    File.delete(@file_name)
+    pid = Process.pid
+    Process.setproctitle("file_deletion")
     response(file_path, pid)
   end
 

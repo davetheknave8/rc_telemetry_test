@@ -6,10 +6,14 @@ require_relative 'process_event'
 
 require 'securerandom'
 require 'socket'
+require 'byebug'
 
-@file_event = FileEvent.new(SecureRandom.uuid)
+PROCESS_ARG = ARGV[0]
+FILE_PATH_ARG = ARGV[1]
+
+@file_event = FileEvent.new(SecureRandom.uuid, FILE_PATH_ARG)
 @network_event = NetworkEvent.new
-@process_event = ProcessEvent.new
+@process_event = ProcessEvent.new(PROCESS_ARG)
 
 begin
   log = []
@@ -19,7 +23,7 @@ begin
 
   log << @network_event.connect
 
-  puts log
+  log << @process_event.trigger_process
 
-  @process_event.trigger_process
+  puts log
 end
