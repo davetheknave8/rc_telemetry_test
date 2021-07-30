@@ -15,10 +15,8 @@ class FileEvent
       File.open(@file_name, "w") { |f| f.write("testing file creation") }
       Process.setproctitle("file_creation")
     end
-    name =  %x[ps -o comm -p #{pid}].split(' ')[1]
-    command = %x[ps -o command -p #{pid}].split(' ')[1]
     file_path = File.expand_path("./#{@file_name}")
-    response(file_path, pid, name, command)
+    response(file_path, pid)
   end
 
   def modify_file
@@ -26,10 +24,8 @@ class FileEvent
       File.open(@file_name, "a") { |f| f.write("testing file modification") }
       Process.setproctitle("file_modification")
     end
-    name =  %x[ps -o comm -p #{pid}].split(' ')[1]
-    command = %x[ps -o command -p #{pid}].split(' ')[1]
     file_path = File.expand_path("./#{@file_name}")
-    response(file_path, pid, name, command)
+    response(file_path, pid)
   end
 
   def delete_file
@@ -38,20 +34,26 @@ class FileEvent
       file = File.delete(@file_name)
       Process.setproctitle("file_deletion")
     end
-    name =  %x[ps -o comm -p #{pid}].split(' ')[1]
-    command = %x[ps -o command -p #{pid}].split(' ')[1]
-    response(file_path, pid, name, command)
+    response(file_path, pid)
   end
 
-  private def response(file_path, pid, name, command)
+  private def response(file_path, pid)
     {
       timestamp: Time.now,
       username: Etc.getpwuid(Process.uid).name,
       descriptor: 'delete_file',
       file_path: file_path,
       process_id: pid,
-      process_name: name,
-      process_command: command
+      process_name: process_name(pid),
+      process_command: process_command(pid)
     }.to_json
+  end
+
+  private def process_name(pid)
+    %x[ps -o comm -p #{pid}].split(' ')[1]
+  end
+
+  private def process_command(pid)
+    %x[ps -o command -p #{pid}].split(' ')[1]
   end
 end
