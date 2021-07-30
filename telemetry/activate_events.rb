@@ -28,7 +28,7 @@ begin
 
   puts log
 
-  path = ".logs/#{Time.now}_log.json"
+  path = "logs/#{Time.now}_log.json"
 
   dir = File.dirname(path)
 
