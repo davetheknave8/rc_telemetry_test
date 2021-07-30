@@ -7,6 +7,7 @@ require_relative 'process_event'
 require 'securerandom'
 require 'socket'
 require 'byebug'
+require 'fileutils'
 
 PROCESS_ARG = ARGV[0]
 FILE_PATH_ARG = ARGV[1]
@@ -26,4 +27,14 @@ begin
   log << @process_event.trigger_process
 
   puts log
+
+  path = ".logs/#{Time.now}_log.json"
+
+  dir = File.dirname(path)
+
+  unless File.directory?(dir)
+    FileUtils.mkdir_p(dir)
+  end
+
+  File.open(path, "w") { |f| f.write(log) }
 end
