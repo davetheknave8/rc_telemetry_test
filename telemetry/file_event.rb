@@ -17,15 +17,8 @@ class FileEvent
     end
     name =  %x[ps -o comm -p #{pid}].split(' ')[1]
     command = %x[ps -o command -p #{pid}].split(' ')[1]
-    {
-      timestamp: Time.now,
-      username: Etc.getpwuid(Process.uid).name,
-      descriptor: 'create_file',
-      file_path: File.expand_path("./#{@file_name}"),
-      process_id: pid,
-      process_name: name,
-      process_command: command
-    }.to_json
+    file_path = File.expand_path("./#{@file_name}")
+    response(file_path, pid, name, command)
   end
 
   def modify_file
@@ -35,15 +28,8 @@ class FileEvent
     end
     name =  %x[ps -o comm -p #{pid}].split(' ')[1]
     command = %x[ps -o command -p #{pid}].split(' ')[1]
-    {
-      timestamp: Time.now,
-      username: Etc.getpwuid(Process.uid).name,
-      descriptor: 'modify_file',
-      file_path: File.expand_path("./#{@file_name}"),
-      process_id: pid,
-      process_name: name,
-      process_command: command
-    }.to_json
+    file_path = File.expand_path("./#{@file_name}")
+    response(file_path, pid, name, command)
   end
 
   def delete_file
@@ -54,6 +40,10 @@ class FileEvent
     end
     name =  %x[ps -o comm -p #{pid}].split(' ')[1]
     command = %x[ps -o command -p #{pid}].split(' ')[1]
+    response(file_path, pid, name, command)
+  end
+
+  private def response(file_path, pid, name, command)
     {
       timestamp: Time.now,
       username: Etc.getpwuid(Process.uid).name,

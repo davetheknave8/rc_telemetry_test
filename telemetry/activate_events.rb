@@ -17,7 +17,9 @@ begin
   log << @file_event.modify_file
   log << @file_event.delete_file
 
-  @network_event.connect
+  log << @network_event.connect
+
+  puts log
 
   @process_event.trigger_process
 end
