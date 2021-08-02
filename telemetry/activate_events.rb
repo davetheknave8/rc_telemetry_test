@@ -6,7 +6,6 @@ require_relative 'process_event'
 
 require 'securerandom'
 require 'socket'
-require 'byebug'
 require 'fileutils'
 
 PROCESS_ARG = ARGV[0]
