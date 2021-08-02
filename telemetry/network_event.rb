@@ -4,6 +4,7 @@ require 'httparty'
 require 'socket'
 require 'etc'
 require 'json'
+require 'resolv-replace'
 
 class NetworkEvent
   def initialize
