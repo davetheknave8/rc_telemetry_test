@@ -18,14 +18,15 @@ class NetworkEvent
     source_port = 8080
     payload = "hello"
 
-    HTTParty.post(
-      "http://#{destination_address}",
-      local_port: source_port,
-      local_host: source_address,
-      body: payload
-    )
-    pid = Process.pid
-    Process.setproctitle("network_event")
+    pid = Process.fork do
+      Process.setproctitle("network_event")
+      HTTParty.post(
+        "http://#{destination_address}",
+        local_port: source_port,
+        local_host: source_address,
+        body: payload
+      )
+    end
 
     name =  %x[ps -o comm -p #{pid}].split(' ')[1]
     command = %x[ps -o command -p #{pid}].split(' ')[1]

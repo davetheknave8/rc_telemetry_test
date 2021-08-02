@@ -13,13 +13,15 @@ class ProcessEvent
   def trigger_process
     time_started = Time.now
     if @executable_file
+      pid = Process.fork do
         %x[#{@executable_file}]
-        pid = Process.pid
         Process.setproctitle("process_event_executable_file_present")
+      end
     else
+      pid = Process.fork do
         1 + 1
-        pid = Process.pid
         Process.setproctitle("process_event")
+      end
     end
 
     name = %x[ps -o comm -p #{pid}].split(' ')[1]

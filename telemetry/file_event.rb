@@ -15,26 +15,29 @@ class FileEvent
   end
 
   def create_file
-    File.open(@file_name, "w") { |f| f.write("testing file creation") }
-    Process.setproctitle("file_creation")
-    pid = Process.pid
+    pid = Process.fork do
+      File.open(@file_name, "w") { |f| f.write("testing file creation") }
+      Process.setproctitle("file_creation")
+    end
     file_path = File.expand_path("#{@file_name}")
     response(file_path, pid)
   end
 
   def modify_file
-    File.open(@file_name, "a") { |f| f.write("testing file modification") }
-    pid = Process.pid
-    Process.setproctitle("file_modification")
+    pid = Process.fork do
+      File.open(@file_name, "a") { |f| f.write("testing file modification") }
+      Process.setproctitle("file_modification")
+    end
     file_path = File.expand_path("#{@file_name}")
     response(file_path, pid)
   end
 
   def delete_file
     file_path = File.expand_path("#{@file_name}")
-    File.delete(@file_name)
-    pid = Process.pid
-    Process.setproctitle("file_deletion")
+    pid = Process.fork do
+      File.delete(@file_name)
+      Process.setproctitle("file_deletion")
+    end
     response(file_path, pid)
   end
 
