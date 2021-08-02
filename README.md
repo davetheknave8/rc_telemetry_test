@@ -25,4 +25,6 @@ This is a pretty straightforward Ruby project, but there are just a few things t
 
 
   
+  ** UPDATE 8/2 **
   
+  There was an issue on Linux for one of the methods used, and while troubleshooting I found another bug that logged all events as having the same PID. The commits done on 8/2 were to add Linux support (tested and working now), and also to fix the assignment of PIDs so that each event has a unique one. Please pull the most recent changes to see the fixes.
